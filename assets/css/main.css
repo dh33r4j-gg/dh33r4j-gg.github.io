@@ -28,6 +28,21 @@ section, summary, time, mark, audio, video {
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;}
+*:has(> .small-text) {
+    container-type: inline-size !important;
+}
+
+/* 2. Scale the font size automatically based on that parent container */
+.small-text {
+    display: inline-block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+
+    /* Adjust this percentage down (e.g., 10cqw) if you have very long words */
+    font-size: 13cqw !important; 
+}
 
 body {
 	line-height: 1;
