@@ -25,19 +25,30 @@ section, summary, time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;}
 
-a {
+ul a {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	font-weight: 600;
 	font-size: 16px;
-	font: inherit;
 	vertical-align: baseline;
+	
+	/* Essential Link Resets */
+	text-decoration: none;  /* Removes the default underline */
+	color: #333333;         /* Sets your text color (change as needed) */
+	display: inline-block;  /* Allows the link to have predictable spacing */
 }
+
+/* Optional: Add a hover effect so users know it's clickable */
+ul a:hover {
+	color: #0066cc;         /* Changes color on mouse hover */
+}
+
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;}
+	display: block;
+}
 *:has(> .small-text) {
     container-type: inline-size !important;
 }
