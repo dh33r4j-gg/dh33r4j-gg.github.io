@@ -27,7 +27,14 @@ section, summary, time, mark, audio, video {
 
 ul a {
 	margin: 0;
+	padding: 0;a {
+	margin: 0;
 	padding: 0;
+	border: 0;
+	font-weight: 600;
+	font-size: 12px;
+	vertical-align: baseline;
+}
 	border: 0;
 	font-weight: 600;
 	font-size: 16px;
@@ -35,7 +42,7 @@ ul a {
 	
 	/* Essential Link Resets */
 	text-decoration: none;  /* Removes the default underline */
-	color: #333333;         /* Sets your text color (change as needed) */
+	color: #FFFFFF;         /* Sets your text color (change as needed) */
 	display: inline-block;  /* Allows the link to have predictable spacing */
 }
 
