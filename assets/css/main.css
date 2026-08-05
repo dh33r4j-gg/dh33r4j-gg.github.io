@@ -27,22 +27,15 @@ section, summary, time, mark, audio, video {
 
 ul a {
 	margin: 0;
-	padding: 0;a {
-	margin: 0;
 	padding: 0;
 	border: 0;
 	font-weight: 600;
-	font-size: 12px;
-	vertical-align: baseline;
-}
-	border: 0;
-	font-weight: 600;
-	font-size: 16px;
+	font-size: 12px;        /* Text is now set to 12px */
 	vertical-align: baseline;
 	
 	/* Essential Link Resets */
 	text-decoration: none;  /* Removes the default underline */
-	color: #FFFFFF;         /* Sets your text color (change as needed) */
+	color: #FFFFFF;         /* Sets your text color to White */
 	display: inline-block;  /* Allows the link to have predictable spacing */
 }
 
@@ -50,7 +43,6 @@ ul a {
 ul a:hover {
 	color: #0066cc;         /* Changes color on mouse hover */
 }
-
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
