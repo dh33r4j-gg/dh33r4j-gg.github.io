@@ -11,37 +11,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-		<style>
-        body {
-            font-family: sans-serif;
-            background-color: #121214;
-            color: #e2e8f0;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        /* LIVE STATUS BADGE */
-        .status-badge {
-            display: inline-block;
-            background-color: #64748b; /* Gray while loading */
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        /* INVISIBLE SECRET TAP TARGET AT THE BOTTOM */
-        .secret-trigger {
-            display: inline-block;
-            color: transparent; 
-            padding: 25px;       
-            cursor: default;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent; 
-        }
-    </style>
 	</head>
 	<body class="is-preload">
 
@@ -51,7 +20,7 @@
 				<!-- Header -->
 					<header id="header">
 						<div>
-							<center><h1 style="color: white; font-weight: bold; letter-spacing: 2px;"><i><span id="live-status" style="display: inline-block; background-color: #64748b; color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; transition: background-color 0.3s ease;">LOADING...</span></i></h1></center>
+							<center><h1 style="color: white; font-weight: bold; letter-spacing: 2px;"><i>Gaming Dashboard</i></h1></center>
 						</div>
 						<div class="content">
 							<div class="inner">
@@ -73,7 +42,6 @@
 							</ul>-->
 						</nav>
 					</header>
-				<footer><span onclick="toggleCloudStatus()" style="display: inline-block; color: transparent; padding: 25px; cursor: default; user-select: none; -webkit-tap-highlight-color: transparent;">.</span></footer>
 			</div>
 		<!-- BG -->
 			<div id="bg"></div>
@@ -84,87 +52,5 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script>
-    // Your exact live URL
-    const databaseURL = "https://kvdb.io/MDLk1W5BezUeJ2FRJnA6sC/"; 
-    let isOnline = true;
-    let pollIntervalId = null; // Keeps track of the background loop timer
-
-    const badge = document.getElementById('live-status');
-
-    // 1. FRESH DATA FETCH (For you and your visitors)
-    async function fetchStatus() {
-        try {
-            const cacheBusterURL = `${databaseURL}?t=${new Date().getTime()}`;
-            const response = await fetch(cacheBusterURL);
-            
-            if (response.status === 404) {
-                setOnlineUI(); 
-                return;
-            }
-            
-            const statusText = await response.text();
-            
-            if (statusText.trim() === "offline") {
-                setOfflineUI();
-            } else {
-                setOnlineUI();
-            }
-        } catch (error) {
-            console.log("Failed to load real-time status.");
-        }
-    }
-
-    // 2. SECRET CLOUD TOGGLE (Fixed with loop pausing!)
-    async function toggleCloudStatus() {
-        // STOP THE LOOP IMMEDIATELY: Prevents background loops from downloading old data
-        clearInterval(pollIntervalId);
-
-        isOnline = !isOnline;
-        const newStatus = isOnline ? "online" : "offline";
-
-        // Instantly force your own screen to look correct
-        if (isOnline) { setOnlineUI(); } else { setOfflineUI(); }
-
-        try {
-            // Send update to kvdb.io
-            await fetch(databaseURL, {
-                method: 'POST', 
-                body: newStatus
-            });
-        } catch (error) {
-            console.log("Database update failed.");
-        }
-
-        // RESTART THE LOOP after 3 seconds: Gives the database plenty of time to save safely
-        setTimeout(() => {
-            startPollingLoop();
-        }, 3000);
-    }
-
-    function setOnlineUI() {
-        isOnline = true;
-        badge.innerText = "🟢 ONLINE TO PLAY";
-        badge.style.backgroundColor = "#10b981"; 
-    }
-
-    function setOfflineUI() {
-        isOnline = false;
-        badge.innerText = "🔴 OFFLINE";
-        badge.style.backgroundColor = "#ef4444"; 
-    }
-
-    // Wrapper function to manage your background timer smoothly
-    function startPollingLoop() {
-        // Clear any leftover timers first to prevent multiple loops running at once
-        clearInterval(pollIntervalId);
-        pollIntervalId = setInterval(fetchStatus, 5000);
-    }
-
-    // Initialize everything on first load
-    fetchStatus();
-    startPollingLoop();
-</script>
-
 	</body>
 </html>
