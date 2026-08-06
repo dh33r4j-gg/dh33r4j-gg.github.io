@@ -88,13 +88,13 @@
     // Your exact live URL
     const databaseURL = "https://kvdb.io/MDLk1W5BezUeJ2FRJnA6sC/"; 
     let isOnline = true;
+    let pollIntervalId = null; // Keeps track of the background loop timer
 
     const badge = document.getElementById('live-status');
 
-    // 1. UPDATED FETCH: Clears the cache so other devices see instant updates
+    // 1. FRESH DATA FETCH (For you and your visitors)
     async function fetchStatus() {
         try {
-            // Adding a timestamp (?t=...) forces the browser to download fresh data, bypassing the cache!
             const cacheBusterURL = `${databaseURL}?t=${new Date().getTime()}`;
             const response = await fetch(cacheBusterURL);
             
@@ -105,7 +105,6 @@
             
             const statusText = await response.text();
             
-            // Sync the internal tracker variable to match what's in the database
             if (statusText.trim() === "offline") {
                 setOfflineUI();
             } else {
@@ -116,15 +115,19 @@
         }
     }
 
-    // 2. TOGGLE STATUS: Runs when YOU tap the secret invisible dot
+    // 2. SECRET CLOUD TOGGLE (Fixed with loop pausing!)
     async function toggleCloudStatus() {
+        // STOP THE LOOP IMMEDIATELY: Prevents background loops from downloading old data
+        clearInterval(pollIntervalId);
+
         isOnline = !isOnline;
         const newStatus = isOnline ? "online" : "offline";
 
-        // Instantly flip your own screen layout
+        // Instantly force your own screen to look correct
         if (isOnline) { setOnlineUI(); } else { setOfflineUI(); }
 
         try {
+            // Send update to kvdb.io
             await fetch(databaseURL, {
                 method: 'POST', 
                 body: newStatus
@@ -132,26 +135,35 @@
         } catch (error) {
             console.log("Database update failed.");
         }
+
+        // RESTART THE LOOP after 3 seconds: Gives the database plenty of time to save safely
+        setTimeout(() => {
+            startPollingLoop();
+        }, 3000);
     }
 
     function setOnlineUI() {
         isOnline = true;
         badge.innerText = "🟢 ONLINE TO PLAY";
-        badge.style.backgroundColor = "#10b981"; // Green
+        badge.style.backgroundColor = "#10b981"; 
     }
 
     function setOfflineUI() {
         isOnline = false;
         badge.innerText = "🔴 OFFLINE";
-        badge.style.backgroundColor = "#ef4444"; // Red
+        badge.style.backgroundColor = "#ef4444"; 
     }
 
-    // Run immediately when someone first lands on the page
-    fetchStatus();
+    // Wrapper function to manage your background timer smoothly
+    function startPollingLoop() {
+        // Clear any leftover timers first to prevent multiple loops running at once
+        clearInterval(pollIntervalId);
+        pollIntervalId = setInterval(fetchStatus, 5000);
+    }
 
-    // NEW REAL-TIME POLLING LOOP: 
-    // Automatically checks the database for everyone else every 5 seconds (5000 milliseconds)
-    setInterval(fetchStatus, 5000);
+    // Initialize everything on first load
+    fetchStatus();
+    startPollingLoop();
 </script>
 
 	</body>
