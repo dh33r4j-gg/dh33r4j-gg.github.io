@@ -11,6 +11,37 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<style>
+        body {
+            font-family: sans-serif;
+            background-color: #121214;
+            color: #e2e8f0;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        /* LIVE STATUS BADGE */
+        .status-badge {
+            display: inline-block;
+            background-color: #64748b; /* Gray while loading */
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* INVISIBLE SECRET TAP TARGET AT THE BOTTOM */
+        .secret-trigger {
+            display: inline-block;
+            color: transparent; 
+            padding: 25px;       
+            cursor: default;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent; 
+        }
+    </style>
 	</head>
 	<body class="is-preload">
 
@@ -20,7 +51,7 @@
 				<!-- Header -->
 					<header id="header">
 						<div>
-							<center><h1 style="color: white; font-weight: bold; letter-spacing: 2px;"><i>GAMING DASHBOARD</i></h1></center>
+							<center><h1 style="color: white; font-weight: bold; letter-spacing: 2px;"><i><span id="live-status" style="display: inline-block; background-color: #64748b; color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; transition: background-color 0.3s ease;">LOADING...</span></i></h1></center>
 						</div>
 						<div class="content">
 							<div class="inner">
@@ -42,6 +73,7 @@
 							</ul>-->
 						</nav>
 					</header>
+				<footer><span onclick="toggleCloudStatus()" style="display: inline-block; color: transparent; padding: 25px; cursor: default; user-select: none; -webkit-tap-highlight-color: transparent;">.</span></footer>
 			</div>
 		<!-- BG -->
 			<div id="bg"></div>
@@ -52,6 +84,64 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+    // Your exact kvdb.io live URL
+    const databaseURL = "https://kvdb.io/MDLk1W5BezUeJ2FRJnA6sC/"; 
+    let isOnline = true;
+
+    const badge = document.getElementById('live-status');
+
+    // Feches the current live status for any visitor opening the page
+    async function fetchStatus() {
+        try {
+            const response = await fetch(databaseURL);
+            if (response.status === 404) {
+                setOnlineUI(); // Defaults to online if database key doesn't exist yet
+                return;
+            }
+            const statusText = await response.text();
+            if (statusText.trim() === "offline") {
+                setOfflineUI();
+            } else {
+                setOnlineUI();
+            }
+        } catch (error) {
+            setOnlineUI(); // Fallback if connection fails
+        }
+    }
+
+    // Changes the status in the cloud when YOU tap the secret invisible dot
+    async function toggleCloudStatus() {
+        isOnline = !isOnline;
+        const newStatus = isOnline ? "online" : "offline";
+
+        if (isOnline) { setOnlineUI(); } else { setOfflineUI(); }
+
+        try {
+            await fetch(databaseURL, {
+                method: 'POST', 
+                body: newStatus
+            });
+        } catch (error) {
+            console.log("Database update failed.");
+        }
+    }
+
+    function setOnlineUI() {
+        isOnline = true;
+        badge.innerText = "🟢 ONLINE TO PLAY";
+        badge.style.backgroundColor = "#10b981"; // Green
+    }
+
+    function setOfflineUI() {
+        isOnline = false;
+        badge.innerText = "🔴 OFFLINE";
+        badge.style.backgroundColor = "#ef4444"; // Red
+    }
+
+    // Run automatically on page load
+    fetchStatus();
+</script>
 
 	</body>
 </html>
