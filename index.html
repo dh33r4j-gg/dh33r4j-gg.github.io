@@ -85,36 +85,43 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 			<script>
-    // Your exact kvdb.io live URL
-    const databaseURL = "https://kvdb.io/MDLk1W5BezUeJ2FRJnA6sC/"; 
+    // Your exact live URL
+    const databaseURL = "https://kvdb.io"; 
     let isOnline = true;
 
     const badge = document.getElementById('live-status');
 
-    // Feches the current live status for any visitor opening the page
+    // 1. UPDATED FETCH: Clears the cache so other devices see instant updates
     async function fetchStatus() {
         try {
-            const response = await fetch(databaseURL);
+            // Adding a timestamp (?t=...) forces the browser to download fresh data, bypassing the cache!
+            const cacheBusterURL = `${databaseURL}?t=${new Date().getTime()}`;
+            const response = await fetch(cacheBusterURL);
+            
             if (response.status === 404) {
-                setOnlineUI(); // Defaults to online if database key doesn't exist yet
+                setOnlineUI(); 
                 return;
             }
+            
             const statusText = await response.text();
+            
+            // Sync the internal tracker variable to match what's in the database
             if (statusText.trim() === "offline") {
                 setOfflineUI();
             } else {
                 setOnlineUI();
             }
         } catch (error) {
-            setOnlineUI(); // Fallback if connection fails
+            console.log("Failed to load real-time status.");
         }
     }
 
-    // Changes the status in the cloud when YOU tap the secret invisible dot
+    // 2. TOGGLE STATUS: Runs when YOU tap the secret invisible dot
     async function toggleCloudStatus() {
         isOnline = !isOnline;
         const newStatus = isOnline ? "online" : "offline";
 
+        // Instantly flip your own screen layout
         if (isOnline) { setOnlineUI(); } else { setOfflineUI(); }
 
         try {
@@ -139,8 +146,12 @@
         badge.style.backgroundColor = "#ef4444"; // Red
     }
 
-    // Run automatically on page load
+    // Run immediately when someone first lands on the page
     fetchStatus();
+
+    // NEW REAL-TIME POLLING LOOP: 
+    // Automatically checks the database for everyone else every 5 seconds (5000 milliseconds)
+    setInterval(fetchStatus, 5000);
 </script>
 
 	</body>
